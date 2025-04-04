@@ -1,0 +1,15 @@
+free2bind a suite of general purpose bioinformatics tools for computing the 
+minimum free energy (the most stable) binding between two separate RNA 
+molecules.
+
+Detailed information about how to use these tools can be obtained
+by running the tool with the '-h' parameter.  For example:
+
+shell> ./free_align.pl -h
+
+will give all sorts of details of what the input is expected to be as well
+as what you might expect as the output.
+
+Questions, comments or concerns should be sent to:
+Josh Starmer
+jdstarme@unity.ncsu.edu

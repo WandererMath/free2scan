@@ -1,0 +1,217 @@
+Changes made after 1.0:
+
+* free_scan now converts the rRNA sequence into RNA (if it is input as
+  DNA, with 't' instead of 'u').
+
+
+Changes made after 0.9:
+
+* Added additional documentation to free_scan and free_align about how
+  different options can cause doublets to be scored differently.
+
+* modified "extract_indices.pl" to ignore genes that have "vague" annotation.
+  That is to say, it ignores genes that contain '<' or '>' characters in
+  their location annotation.
+
+* free_scan now prints out the value for $gNumBases, if defined, as a comment
+  ($gNumBases is number of bases specified by the -n option, the total 
+   number of bases you want to analyze).
+
+* Modified "extract_seq" so that it will wrap around if it needs to.  This
+  assumes that a sequence is circular.
+
+* Modified the '-c' option so that the names of the genes (comments in 
+  index_data) get printed at the tops of columns.
+
+* Added a '-r' option for free_scan so that it can print out the output
+  with one row of data per row in index_data.
+
+* The comments printed by "free_scan", which include the first base in the
+  alignment (binding) and the position, have been modified.  The "position"
+  is now negative for all leader bases, incrementing the closer it gets to the 
+  start index, zero for the start index position and positive for all bases
+  after.  For example, if the length of the leader was 3, then the numbering
+  of the bases would be: -3 -2 -1 0 1 2 3 4 etc....
+
+* Tightened up the documentation a little bit.  Tried to remove references to
+  a "command_file" and, instead, add references to "index_data", in order to 
+  differentiate between what these programs will accept and what you can pass
+  to Rosnick's old "calc_free_energy" program.
+
+
+Changes made after 0.8:
+
+* free_scan.pl now prints out header information if you pass in a path for
+  each file.
+
+* Fixed a bug in the extract_seq() that was causing the -n option in 
+  extract_seq.pl and free_scan.pl to not work with genes with multiple exons.
+
+* The XIA_MATHEWS parameters are now the default.  (instead of the freier ones)
+
+* Added more details to the output of free_align and free_scan.  
+  Parameter values for loops are specified, since they may be from a different
+  source as the parameter values for doublet binding.
+
+* Added a means to penalize dangling ends (bulges on the ends of alignments).  
+  This is needed in order to be able to completely eliminate bulges from
+  alignments.  The "-b 0" option only prevented internal bulges.  
+
+
+Changes made after 0.7:
+
+* changed the switches for "leader" and "trailer" to "L" and "T" (from "l" and
+  "t".)  This allows for consistency between extract_seq.pl and free_scan.pl.
+
+* removed all "window" options.  Replaced them with "-n" for num_bases.
+  See inline documentation in extract_seq.pl for details.
+
+* removed the "-f" option documentation from free_scan.pl.
+
+* added some options (trailer, window) to free_scan.pl, as well as a
+  path argument that can direct where the output goes.
+
+* fixed a bug in the output when the -f option is used in free_align.pl.
+
+* extract_seq.pl now allows for command data (index data) to be specified on
+  the command line.
+
+* extract_indices.pl now has a "-r" (for "relaxed") option that picks up genes 
+  even if they are not experimentally verified and are lacking the "/gene="
+  field.  It seems that genes without the "/gene=" field have a "/locus_tag=" 
+  tag instead.
+
+* modified free_align.pl and FreeAlign.pm so that when using the '-f' option 
+  and "force_bind()" you can print out the alignment.
+
+* extract_indices.pl now has three options: Gene, CDS or mRNA.
+
+
+Changes made after 0.6:
+
+* Updated TUTORIAL and the "help" information for free_scan.pl
+
+* Added to the "header" data that both free_align.pl and free_scan.pl
+  the parameters as well as the temperature.
+
+* Modified free_align.pl and free_scan.pl so that you can set the binding
+  temperature.
+
+* Modified free_scan.pl so that you can now take advantage of the ability
+  to select different parameter values to simulate binding between two 
+  strands of nucleotides.
+
+* Modified extract_seq.pl and free_scan.pl so that the command_file is now
+  an optional command line argument.  If command_file is not specified, then
+  all of the sequence from the sequence file is extracted/examined.
+
+* Changed the name of "extract_dna.pl" to "extract_seq.pl" to reflect the
+  general nature of the tool (it can extract any kind of sequence data from
+  a FASTA file.  DNA is just one of the many types...)
+
+* force_bind(), in FreeAlign.pm now scores the start and end of the helix as
+  "terminal doublets" regardless of where in the sequence the helix begins.
+  (formerly, terminal doublets were scored only if they occurred at the very
+   ends of the sequence.  Helices that did not include the very ends of the
+   sequence did not have "terminal doublets").
+
+* Modified free_align.pl so that you can now take advantage of the ability
+  to select different parameter values to simulate binding between two
+  strands of nucleotides.
+
+* Modified FreeAlign.pm so that you can select different parameter values for
+  the binding of internal doublets.  Currently the choices are SantaLucia 
+  (1998) and Freier (1986).
+
+
+Changes made after 0.5:
+
+* replaced both cds2cmd.pl and mrna2cmd.pl with extract_indices.pl
+
+* extract_dna.pl, the '-w' feature now returns window_size*2+1 bases.  That
+  is to say, window_size bases before and window size bases after, plus the one
+  for the base that defines the start position.
+
+* cds2cmd.pl: since we are no longer attempting to maintain compatibility with
+  David Rosnick's program "calc_free_energy", command files now look more like
+  the syntax you actually see in genbank files.  "join" and "complement" as
+  well as their associated parentheses are allowed in command files now and
+  this program was modified (simplified) to allow for that change.
+
+* extract_dna.pl will now accept "join(start..stop,start..stop,etc.)" syntax
+  as well as "complement(join(stop..start,stop..start,etc.))" syntax.
+
+* extract_dna.pl will now accept command files that contain 
+  "complement(stop..start)" syntax and do the right thing.
+
+* Fixed a bug in extract_dna.pl that was causing the -w option to ignore the
+  fact that sometimes the start index is larger than the stop index and in 
+  this case the sequence should be complemented and reversed.  Now it works
+  fine.
+
+* The "output as fasta", or "-f" option for extract_dna.pl now puts a lot
+  more information in the comment line.
+
+* fixed a bug in way output from free_align.pl was formatted.  The "pairs"
+  string was not lining up correctly with the actual alignment when the
+  binding in both strands started on the same index > 1.
+
+* added -o option for free_align.pl - this is a lot like the -f option, only
+  the helix does not have to begin with the first bases in both sequences.
+
+* free_scan.pl now only allows for the "forced alignment".  The '-f' option
+  is still there, but will eventually be removed since the results are the
+  same regardless of its use.
+
+* free_scan.pl no longer creates a temporary file named "temp_cmd" in order
+  to extract sequence data.  Instead it uses the "tmpnam" command to create
+  a new filename, this file is the opened (if it does not already exist) and
+  used for the command data.  After it has served its purpose, it is deleted.
+
+* mrna2cmd.pl was added to the package.
+
+
+Changes made after 0.4:
+
+* free_align.pl now has a "force" option that allows for an alignment between
+  two strands of RNA to be force to begin with the first bases in both strands.
+  Only bases that can form a helix are scored (free energy wise) and both
+  loops and bulges are ignored.
+
+* free_scan.pl now has the same "force" option that free_align.pl has.
+
+* extract_dna.pl now has an option so that its output can be in FASTA format.
+
+* free_align.pl will now accept strings or files (in FASTA format) or mixtures
+  of the two.
+
+* fixed a minor problem with extract_dna.pl (blank lines in the command file
+  were causing blank lines to occur in the output) that spilled over into
+  errors being reported by free_scan and free_align.
+
+
+Changes made after 0.3:
+
+* made a lot of changes to how free_scan.pl prints its output.  It will also
+  now allow you to add some leader sequence to each line in the command file.
+
+* added the ability to turn on/off bulges and loops
+
+
+Changes made after 0.2:
+
+* added the "-e" (Energy Only) option to restrict the output to just the
+  energy value (Delta-G)
+
+* fixed bulges, and thus, the transition to published penalties for bulges
+  is now complete.
+
+* fixed loops, and thus, the transition to published penalties for loops is
+  now complete.
+  
+* fixed a bug with blunt ends to helices on the right-hand side and loops.
+
+* added to the output of free_align.pl.  New statistics include:
+    a) start positions of the binding in both sequences
+    b) length of binding
+  also added an explanation of the "pairs" characters.

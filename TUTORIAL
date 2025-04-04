@@ -1,0 +1,119 @@
+Here's a brief tutorial that should get you up and running with the tools.
+Do keep in mind that this tutorial does not attempt to show the full
+functionality of the tools.  To find out more about what each tool can do,
+simply run the tool on the command line without any arguments or with the
+"-h" option:
+
+EXAMPLE
+
+shell> ./free_scan.pl
+
+will print out lots of details on how you can control the program.
+
+
+**************************************************************************
+
+I.  To examine how one strand of RNA might bind to another strand of RNA
+   in an optimal way (thus, you are only interested in the best binding
+   between the two strands and not any of the sub-optimal binding)
+
+**************************************************************************
+
+This can be done on a single command line.  Here is an example:
+
+shell> ./free_align.pl aattagcaatagcat  ccagttatc
+ 
+Delta-G for best pairing: -6.8 + 3.4 = -3.4
+ 
+Length of bound region between sequences: 6
+ 
+seq1 binding begins on base index: 6
+seq2 binding begins on base index: 3
+ 
+| = pair is a member of a helix
+0 = pair is a member of a loop
+P = bulge in top strand
+b = bulge in bottom strand
+ 
+seq1  0: aauuagCAAUAGCau
+       :       ||||||
+seq2  0:    ccaGUUAUC
+ 
+
+**************************************************************************
+
+II.  To investigate how a short RNA strand might interacts with different mRNAs
+   (This gives both optimal and sub-optimal binding).
+
+**************************************************************************
+
+This takes several steps:
+
+1) You first need to create an index_data file that defines the start and stop
+points in the genes you want to look at.  If you are not interested in any
+particular gene, you can create an index_data file from a genbank file with
+the following command:
+
+shell> ./extract_indices.pl genbank_file.gbk > index_data
+
+This command simply looks for annotations for CDS (or mRNA) in the genbank file
+(vaguely attempting to avoid genes that are not experimentally verified and
+only choosing one, the first, CDS per gene) and makes an index_data file out of
+them.
+
+If extract_indices.pl created an index_data file with thousands of starts and 
+stops and all you want to do is look at the first 5 genes, you can extract 
+them easily using the "head" command:
+
+shell> head -5 index_data > first_5_genes
+
+If you just want to look at a single gene, you can also easily create an
+index_data file by hand (or copying/pasting from a file containing other 
+data).  The format for the index_data file is roughly the way gene
+locations are annotated in genbank files.  See './extract_seq.pl -h' for
+more details.
+
+
+2) If you do not already have a FASTA version of your sequence file (a
+FASTA version of the sequence file will be needed later), you can
+create one with the command:
+
+shell> ./gbk2fasta.pl genbank_file.gbk > fasta_file.fasta
+
+
+3) You can now calculate the free energy values for each position specified
+in the index_data file with the command (NOTE: the RNA sequence 
+"auuccuccacuagg" must be written 3'->5'):
+
+shell> ./free_scan.pl auuccuccacuagg fasta_file.fasta index_data > dg_values.txt
+
+This dumps all of the Delta G data into a single file.  You can also dump it
+into one file per gene/mRNA with the command:
+
+shell> ./free_scan.pl auuccuccacuagg fasta_file.fasta index_data DG_file_directory/
+
+Where "DG_file_directory" is a directory where you want to store the new files.
+NOTE: When you supply a directory on the command line, you must be sure that
+your "index_data" contains a name of a gene in the comment.  See the help for
+free_scan.pl for more details.
+
+
+NOTES: 
+  a) If you created the "first_5_genes" index_data file, you would use that 
+file name where it says "index_data".
+
+  b) free_scan.pl will dump a lot of comments in the output.  You can 
+suppress these with the "-e" option.
+
+
+
+**************************************************************************
+
+III.  To extract a subset of sequence from a larger sequence file
+
+**************************************************************************
+
+Simply create an index_data file that specified the start and stop indexes of
+the subset of sequence and then run the command:
+
+shell> extract_seq.pl sequence_file index_data > subset_file.txt

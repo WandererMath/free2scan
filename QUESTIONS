@@ -1,0 +1,87 @@
+A few questions:
+
+1) In the original "Freier et al." paper 
+("Freier et al., PNAS (1986) Vol. 83, pp. 9373-9377")
+there are parameter values for unpaired terminal nucleotides (Table 3).  
+That is to say, there are measurements for "3' dangling ends" and "5' dangling 
+ends".  Some example parameters for 3' dangling ends are:
+
+AA = -0.8,  CU = -1.2  etc.
+U           G
+
+Where the top strand goes 5'->3'.
+
+Some example parameters for 5' dangling ends are:
+
+AU = -0.3, CU = -0.2 etc.
+ A          A
+
+Here is way these are implemented in FreeAlign.pm:  I am allowing the dangling
+end to be more than one base long.  For example:
+
+AA = AANNNN... = -0.8
+U    U
+
+where N is any nucleotide.
+
+Also
+
+AU = NNNNAU = -0.3
+ A        A
+
+Is this a correct interpretation?
+
+
+***************************************************************************
+
+2) Along the lines of the previous question, I am not entirely sure what
+when exactly to score "terminal mismatches and base pairs" (Table 4).
+
+For example, the table has a score for:
+
+GA = -1.1
+CA
+
+Now, the way that I am implementing this in the program is require both
+sequences to be at the very ends.  Nothing is allowed to dangle.
+
+Is this the correct interpretation?
+
+
+***************************************************************************
+
+3) How should loops be scored?  For example, the current implementation would
+score the following loop:
+
+GAUUUUGA
+||    ||
+CUUUUUCU
+
+as a loop that contains 8 bases.  Should it score it differently (i.e. as
+a loop that contains 4 bases?)
+
+What about loops where each strand contributes a different number of bases
+to the loop?  For example:
+
+GAUUUUGA
+||    ||
+CUUUU-CU
+
+where the top strand contributes four bases and the bottom strand
+contributes 3 bases to the loop.  These types of loops are currently scored
+as a loop of 6 bases plus a single base bulge.
+
+My current guess is that the first loop is a loop of 8 bases and the second 
+loop would only have 7 bases.
+
+
+***************************************************************************
+
+***************************************************************************
+
+
+Any thoughts on any of these questions can be sent to me at
+jdstarme@unity.ncsu.edu
+
+Thanks so much,
+Josh
