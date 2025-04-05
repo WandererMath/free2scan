@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+use FindBin;
+use lib "$FindBin::Bin";
+
+
 ##========================================================================
 ##
 ## Usage: free_scan.pl [options] rna_seq sequence.fasta [index_data] [path]
